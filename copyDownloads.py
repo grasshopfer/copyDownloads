@@ -1,6 +1,6 @@
 #! python3
 
-# copyDownloads.py is a personal script to copy files in ~/Downloads to a
+# copyDownloads.py is a personal script to copy files in ~/Downloads to an
 #   external hard disk. 
 
 import os, shutil, sys
@@ -21,7 +21,7 @@ def writeLog(text):
     log.write(text + '\n')
     log.close()
 
-writeLog('Beginning script')
+writeLog('Beginning script. Moving files from ' + downloadDir + ' to ' + extDir + '.')
 # Get list of files in ~/Downloads and externalDir
 target = os.listdir(extDir)
 dls = os.listdir(downloadDir)
@@ -39,5 +39,6 @@ for file in dupes:
 for file in dls:
     writeLog('\tMoving ' + file + ' to ' + extDir + '. . .')
     shutil.move(file, extDir)
+    #writeLog('\t\t' + file + ' moved in ' + time + ' seconds.')
 
-writeLog('Terminating script.')
+writeLog('Complete.')
