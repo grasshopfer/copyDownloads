@@ -3,22 +3,28 @@
 # copyDownloads.py is a personal script to copy files in ~/Downloads to a
 #   external hard disk. 
 
-import os, shutil
+import os, shutil, sys
 
-downloadDir = os.path.expanduser('~/Downloads/')
+myName = sys.argv[0]
+downloadDir = os.path.abspath(os.path.expanduser('~/Downloads/'))
 extDir = os.path.abspath('/mnt/mybook/Downloads/')
-logFile = r'/home/capn/bin/copyDownloads.log'
-logText = []
+logFile = os.path.join(os.path.dirname(os.path.realpath(__file__)),myName+'.log')
 
-# TODO add check for remaining space in target
+# TODO accept args for to and from
+# TODO add check for writability and remaining space in target
 # TODO add timing information to log
 # TODO figure out timestamping
-# TODO check external directory for writability
 
+# Write to log file as messages occur
+def writeLog(text):
+    log = open(logFile,'a')
+    log.write(text + '\n')
+    log.close()
+
+writeLog('Beginning script')
 # Get list of files in ~/Downloads and externalDir
-os.chdir(downloadDir)           # now running in ~/Downloads
-dls = os.listdir(downloadDir)
 target = os.listdir(extDir)
+dls = os.listdir(downloadDir)
     
 # Compare the files in Downloads against external files to avoid duplication
 #   set().intersection() gives the common elements of the two sets
@@ -26,16 +32,12 @@ dupes = list(set(dls).intersection(set(target)))
 # TODO check for more recent access time, if more recent, overwrite file at dest
 for file in dupes:
     if file in dls:
-        logText.append(file + ' already exists in ' + extDir + ', excluding. . .')
+        writeLog('\t' + file + ' already exists in ' + extDir + ', excluding. . .')
         dls.remove(file)
 
 # Move files from home dir to external dir
 for file in dls:
-    logText.append('Moving ' + file + ' to ' + extDir + '. . .')
+    writeLog('\tMoving ' + file + ' to ' + extDir + '. . .')
     shutil.move(file, extDir)
 
-# Write out log file (TODO make method and write immediately)
-writeLog = open(logFile,'w')
-for line in logText:
-    writeLog.write(line + '\n')
-writeLog.close()
+writeLog('Terminating script.')
